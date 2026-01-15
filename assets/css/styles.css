@@ -23,7 +23,7 @@ a { text-decoration: none; color: inherit; transition: 0.3s; }
 
 /* --- BỐ CỤC CHÍNH (LAYOUT) --- */
 .app-container {
-    display: flex;
+    display: block; /* Đổi từ flex sang block */
     min-height: 100vh;
 }
 
@@ -81,10 +81,14 @@ a { text-decoration: none; color: inherit; transition: 0.3s; }
 
 /* 2. Main Content (Khu vực chính) */
 .main-content {
-    flex: 1;
-    margin-left: var(--sidebar-width); /* Chừa chỗ cho sidebar */
+    /* Quan trọng: Đẩy nội dung sang phải bằng đúng chiều rộng Sidebar */
+    margin-left: var(--sidebar-width); 
+    
+    /* Quan trọng: Chiều rộng phải trừ đi phần Sidebar để không bị thanh cuộn ngang */
+    width: calc(100% - var(--sidebar-width)); 
+    
     padding: 20px;
-    width: 100%; /* Đảm bảo không bị tràn */
+    box-sizing: border-box; /* Đảm bảo padding không làm vỡ khung */
 }
 
 /* Header */
@@ -203,8 +207,27 @@ a { text-decoration: none; color: inherit; transition: 0.3s; }
     text-align: center;
 }
 
-/* --- RESPONSIVE CHO SIDEBAR (Ẩn trên mobile) --- */
-.mobile-menu-btn { display: none; background: none; border: none; color: #fff; font-size: 24px; }
+/* --- RESPONSIVE (MOBILE/TABLET) --- */
+/* Khi màn hình nhỏ hơn 991px, Sidebar ẩn đi thì Nội dung phải tràn ra full màn hình */
+@media (max-width: 991px) {
+    .sidebar { 
+        transform: translateX(-100%); /* Ẩn sang trái */
+    } 
+    
+    .sidebar.active { 
+        transform: translateX(0); /* Hiện lại khi bấm nút menu */
+    } 
+    
+    .main-content { 
+        margin-left: 0; /* Trả lại không gian cho nội dung */
+        width: 100%;    /* Full màn hình */
+    }
+    
+    .mobile-menu-btn { 
+        display: block; 
+        margin-right: 15px; 
+    }
+}
 
 @media (max-width: 991px) {
     .sidebar { transform: translateX(-100%); width: 280px; } /* Ẩn sidebar */
