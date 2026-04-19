@@ -4,7 +4,7 @@
     return;
   }
 
-  const MAX_HOME_GAMES = 8;
+  const MAX_HOME_GAMES = 32;
 
   const CATEGORY_RULES = [
     {
