@@ -307,7 +307,9 @@ a { text-decoration: none; color: inherit; transition: 0.3s; }
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
   gap: 0.7rem;
-  justify-items: center;
+  justify-items: stretch;
+  align-items: start;
+  align-content: start;
 }
 #home-games-grid {
   margin: 0 auto;
