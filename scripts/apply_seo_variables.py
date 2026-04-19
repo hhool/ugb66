@@ -10,9 +10,33 @@ from typing import Optional
 SEO_START = "<!-- SEO:START -->"
 SEO_END = "<!-- SEO:END -->"
 
+SPECIAL_TOKENS = {
+    "io": "IO",
+    "lol": "LOL",
+    "fnf": "FNF",
+    "fnaf": "FNAF",
+    "fps": "FPS",
+    "3d": "3D",
+    "2d": "2D",
+    "x3m": "X3M",
+    "nba": "NBA",
+    "nfl": "NFL",
+    "gta": "GTA",
+    "ovo": "OvO",
+}
+
 
 def title_case_from_slug(slug: str) -> str:
-    return " ".join(part.upper() if part == "io" else part.capitalize() for part in slug.split("-"))
+    words = []
+    for part in slug.split("-"):
+        lower_part = part.lower()
+        if lower_part in SPECIAL_TOKENS:
+            words.append(SPECIAL_TOKENS[lower_part])
+        elif part.isdigit():
+            words.append(part)
+        else:
+            words.append(part.capitalize())
+    return " ".join(words)
 
 
 def choose_variant(values, key: str) -> str:
@@ -30,11 +54,18 @@ def strip_existing_seo_block(html: str) -> str:
 def page_type_and_name(rel_path: str):
     if rel_path == "index.html":
         return "home", "Home"
+    if rel_path == "404.html":
+        return "error_404", "404"
     if rel_path.startswith("game/") and rel_path.endswith(".html"):
         return "game", title_case_from_slug(Path(rel_path).stem)
     if rel_path.startswith("category/") and rel_path.endswith(".html"):
         return "category", title_case_from_slug(Path(rel_path).stem)
     return "default", Path(rel_path).stem.replace("-", " ").title()
+
+
+def should_skip_file(rel_path: str) -> bool:
+    file_name = Path(rel_path).name
+    return file_name.startswith("google") and file_name.endswith(".html")
 
 
 def build_seo_block(cfg: dict, rel_path: str, page_type: str, page_name: str) -> str:
@@ -48,6 +79,7 @@ def build_seo_block(cfg: dict, rel_path: str, page_type: str, page_name: str) ->
         url = f"{base_url}/{rel_path}"
 
     templates = cfg["templates"]
+    extra_meta = []
 
     if page_type == "home":
         title = cfg["home"]["title"]
@@ -62,6 +94,17 @@ def build_seo_block(cfg: dict, rel_path: str, page_type: str, page_name: str) ->
                 "target": f"{base_url}/search.html?q={{search_term_string}}",
                 "query-input": "required name=search_term_string",
             },
+        }
+    elif page_type == "error_404":
+        title = f"404 Not Found | {site_name}"
+        description = f"The page you requested could not be found on {site_name}. Browse the homepage to find more games."
+        extra_meta.append('<meta name="robots" content="noindex, follow">')
+        json_ld = {
+            "@context": "https://schema.org",
+            "@type": "WebPage",
+            "name": "404 Not Found",
+            "url": url,
+            "description": description,
         }
     elif page_type == "game":
         title = templates["game_title"].format(game_name=page_name, site_name=site_name)
@@ -113,6 +156,7 @@ def build_seo_block(cfg: dict, rel_path: str, page_type: str, page_name: str) ->
         f"<title>{title}</title>",
         f"<meta name=\"description\" content=\"{description}\">",
         f"<link rel=\"canonical\" href=\"{url}\">",
+        *extra_meta,
         f"<meta property=\"og:type\" content=\"website\">",
         f"<meta property=\"og:site_name\" content=\"{site_name}\">",
         f"<meta property=\"og:title\" content=\"{title}\">",
@@ -180,6 +224,8 @@ def run(
     html_files = sorted(root_dir.rglob("*.html"))
     if only_game_pages:
         html_files = [path for path in html_files if path.relative_to(root_dir).as_posix().startswith("game/")]
+    else:
+        html_files = [path for path in html_files if not should_skip_file(path.relative_to(root_dir).as_posix())]
 
     total_files = len(html_files)
     batch_limit = total_files - start if limit is None else limit
