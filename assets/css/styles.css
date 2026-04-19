@@ -312,11 +312,12 @@ a { text-decoration: none; color: inherit; transition: 0.3s; }
 #home-games-grid {
   margin: 0 auto;
   width: 100%;
-  max-width: 1136px;
+  max-width: 1264px;
   grid-template-columns: repeat(8, minmax(0, 1fr));
-  gap: 0.8rem;
+  gap: 0.9rem;
   justify-items: stretch;
   align-items: start;
+  align-content: start;
 }
 
 #home-games-grid .card {
