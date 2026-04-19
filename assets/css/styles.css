@@ -26,6 +26,17 @@ body {
 
 a { text-decoration: none; color: inherit; transition: 0.3s; }
 
+/* --- Navbar social icon buttons --- */
+.social { display: inline-flex; align-items: center; margin-left: 4px; }
+.social-button {
+    display: flex; align-items: center; justify-content: center;
+    width: 32px; height: 32px; border-radius: 8px;
+    background: rgba(255,255,255,0.08);
+    transition: background 0.2s;
+}
+.social-button:hover { background: rgba(255,255,255,0.18); }
+.social-button img { width: 18px; height: 18px; object-fit: contain; }
+
 /* --- BỐ CỤC CHÍNH (LAYOUT - FLEXBOX) --- */
 .app-container {
     display: flex; /* Xếp Sidebar và Main nằm ngang hàng nhau */
@@ -273,4 +284,163 @@ a { text-decoration: none; color: inherit; transition: 0.3s; }
     .game-ad-sidebar {
         display: none; 
     }
+}
+
+/* --- Game iframe 16:9 responsive container --- */
+.game-iframe-container {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  background: #000;
+  border-radius: 12px;
+}
+.game-iframe {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+/* --- Sidebar game card list --- */
+.card-masonry {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--bg-card, #1e1e20);
+  border-radius: 10px;
+  padding: 6px 8px;
+  transition: background 0.2s;
+  border: none;
+  color: inherit;
+  text-decoration: none;
+}
+.card:hover { background: #2a2a2d; }
+.card picture { flex-shrink: 0; }
+.card picture img, .card > img {
+  width: 56px; height: 56px;
+  border-radius: 8px;
+  object-fit: cover;
+  display: block;
+}
+.card-body { padding: 0; min-width: 0; }
+.card-body h3 {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #e5e7eb;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* --- Navbar category buttons --- */
+.category-btn {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+.category-btn a {
+  background: rgba(108, 92, 231, 0.15);
+  border: 1px solid rgba(108, 92, 231, 0.3);
+  color: #a89ee8;
+  border-radius: 50px;
+  padding: 4px 14px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  transition: background 0.2s, color 0.2s;
+  text-decoration: none;
+}
+.category-btn a:hover {
+  background: rgba(108, 92, 231, 0.35);
+  color: #fff;
+}
+
+/* --- Width utility classes for game page sidebars --- */
+.w-lg-300 { width: 300px; }
+.w-lg-200 { width: 200px; }
+@media (max-width: 1399px) {
+  .w-lg-300, .w-lg-200 { width: 100%; }
+}
+
+/* ===== Game detail page ===== */
+.game-player {
+  background: var(--bg-card, #1e1e20);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+}
+
+.desc-game { padding: 8px 0; }
+
+.heading-page { margin-bottom: 1rem; }
+.heading-page h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 4px; }
+.heading-page p { font-size: 0.85rem; color: #888; margin: 0; }
+
+.rating-star svg { margin-right: 2px; color: #fa9e25; }
+
+.btn-square {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0;
+  background: rgba(255,255,255,0.06);
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+.btn-square.btn-sm { width: 2rem; height: 2rem; }
+.btn-ghost:hover { background: rgba(108,92,231,0.25); }
+
+.fs-sm { font-size: 0.875rem !important; }
+
+.progress {
+  display: flex;
+  height: 6px;
+  overflow: hidden;
+  background: rgba(255,255,255,0.08);
+  border-radius: 3px;
+}
+.bg-theme { background: #6c5ce7; width: 100%; }
+
+.reaction svg { width: 20px; height: 20px; color: #888; }
+.reaction svg:hover { color: #6c5ce7; }
+.like-count, .dislike-count { color: #888; font-size: 0.65rem !important; }
+
+.right-name { gap: 4px; }
+
+.card-category a { color: #888; font-size: 0.875rem; }
+.card-category a:hover { color: #a89ee8; text-decoration: underline; }
+
+/* ===== Footer ===== */
+.footer {
+  background: #08080f;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  color: #888;
+  padding: 1.5rem 0;
+  font-size: 0.85rem;
+}
+
+/* ===== Override Bootstrap light theme with dark vars ===== */
+[data-bs-theme="light"] {
+  --bs-body-bg: #0f0f10;
+  --bs-body-color: #e5e7eb;
+  --bs-secondary-color: #a1a5b7;
+  --bs-border-color: rgba(255,255,255,0.1);
+  --bs-navbar-color: #e5e7eb;
+  --bs-navbar-hover-color: #fff;
+  --bs-navbar-active-color: #fff;
+  --bs-nav-link-color: #a1a5b7;
+  --bs-nav-link-hover-color: #fff;
+  --bs-link-color: #a89ee8;
+  --bs-link-hover-color: #fff;
+}
+.navbar.bg-body, nav.navbar {
+  background-color: #16161a !important;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
 }
