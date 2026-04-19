@@ -68,6 +68,70 @@ def should_skip_file(rel_path: str) -> bool:
     return file_name.startswith("google") and file_name.endswith(".html")
 
 
+def build_breadcrumb(base_url: str, page_type: str, page_name: str, url: str):
+    items = [
+        {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": f"{base_url}/",
+        }
+    ]
+
+    if page_type == "category":
+        items.append(
+            {
+                "@type": "ListItem",
+                "position": 2,
+                "name": f"{page_name} Games",
+                "item": url,
+            }
+        )
+    elif page_type == "game":
+        items.append(
+            {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "All Games",
+                "item": f"{base_url}/category/all.html",
+            }
+        )
+        items.append(
+            {
+                "@type": "ListItem",
+                "position": 3,
+                "name": page_name,
+                "item": url,
+            }
+        )
+    elif page_type == "home":
+        return None
+    elif page_type == "error_404":
+        items.append(
+            {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "404 Not Found",
+                "item": url,
+            }
+        )
+    else:
+        items.append(
+            {
+                "@type": "ListItem",
+                "position": 2,
+                "name": page_name,
+                "item": url,
+            }
+        )
+
+    return {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": items,
+    }
+
+
 def build_seo_block(cfg: dict, rel_path: str, page_type: str, page_name: str) -> str:
     site_name = cfg["site_name"]
     base_url = cfg["base_url"].rstrip("/")
@@ -149,7 +213,16 @@ def build_seo_block(cfg: dict, rel_path: str, page_type: str, page_name: str) ->
     image = default_image if page_type != "game" else f"/assets/upload/66games/jpg/{Path(rel_path).stem}.jpg"
     image_url = image if image.startswith("http") else f"{base_url}{image}"
 
-    json_ld_str = json.dumps(json_ld, ensure_ascii=True, separators=(",", ":"))
+    breadcrumb_ld = build_breadcrumb(base_url, page_type, page_name, url)
+    if breadcrumb_ld is None:
+        json_ld_payload = json_ld
+    else:
+        json_ld_payload = {
+            "@context": "https://schema.org",
+            "@graph": [json_ld, breadcrumb_ld],
+        }
+
+    json_ld_str = json.dumps(json_ld_payload, ensure_ascii=True, separators=(",", ":"))
 
     lines = [
         SEO_START,
